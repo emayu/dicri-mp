@@ -28,6 +28,20 @@ The project is planed use the following components
 This project was originally developed in Spanish for a technical evaluation on a government institution in Guatemala.  
 All table names, some endpoint and views are in Spanish for consistency.  
 
+##  (Backend)
+### 📁 Folder Structure
+```
+src/
+├── config/      # Configuration (DB, sessions)
+├── constants/   # Project-wide constants
+├── controllers/ # Route logic (handlers)
+├── middlewares/ # Auth, error handling
+├── repository/  # DB access layer with repository pattern
+├── routes/      # Route definitions
+├── services/    # Business logic
+├── types/       # TypeScript interfaces & definitions
+├── utils/       # Helpers
+└── server.ts    # Application entry point
 
 
 ## License
