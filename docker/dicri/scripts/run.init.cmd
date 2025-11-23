@@ -1,0 +1,1 @@
+docker exec -it sqlserver2019 /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "MiPasswrodFuerte123" -C -i /docker-entrypoint-initdb.d/init.sql

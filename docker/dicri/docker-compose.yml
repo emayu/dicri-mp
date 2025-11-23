@@ -1,0 +1,47 @@
+version: '3.9'
+services:
+  dev_db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    user: root
+    container_name: sqlserver2019_1
+    restart: unless-stopped
+    hostname: dev.sqlserver_1
+    environment:
+      MSSQL_SA_PASSWORD: ${DB_MSSQL_SA_PASSWORD}
+      ACCEPT_EULA: Y
+      TZ: ${TZ}
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./db-init/:/docker-entrypoint-initdb.d
+      # - sqlserver_data:/var/opt/mssql
+
+  dev_backend:
+    image: node:iron
+    command: ["sh", "-c", "sleep 15 && npm install && npm run dev"]
+    container_name: dicri_backend
+    user: "node"
+    working_dir: /home/node/app
+    volumes:
+      - type: bind
+        source: ../../backend
+        target: /home/node/app
+      - type: bind
+        source: ../../postman
+        target: /home/node/postman
+    restart: unless-stopped
+    hostname: mp.backend
+    ports:
+      - "${DEV_BACKEND_PORT}:${DEV_BACKEND_PORT}"
+    environment:
+      DB_NAME: ${DEV_BACKEND_DB_NAME}
+      DB_USER: ${DEV_BACKEND_DB_USER}
+      DB_PASSWORD: ${DEV_BACKEND_DB_PASSWORD}
+      DB_HOST: ${DEV_BACKEND_DB_HOST}
+      DB_PORT: ${DEV_BACKEND_DB_PORT}
+      PORT: ${DEV_BACKEND_PORT}
+      SESSION_SECRET: ${DEV_BACKEND_SESSION_SECRET}
+      TZ: ${TZ}
+      ENV: ${DEV_BACKEND_ENV}
+    depends_on:
+     - dev_db
