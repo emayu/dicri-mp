@@ -16,7 +16,7 @@ The project is planed use the following components
 
 ## Status of todos
 - [x] Planned views/mockups and ER schema
-- [ ] First design for testing API(postman)
+- [x] First design for testing API(postman)
 - [ ] Docker compose definition
 - [ ] REST Api implemented
 - [ ] Postman runner passed
