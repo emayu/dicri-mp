@@ -7,6 +7,11 @@
  
 import express, { Express } from "express"; 
 import morgan from "morgan"; 
+import cors from 'cors';
+
+import { sessionMiddleware } from "./config/session";
+import apiRoutes from "./routes";
+import { errorHandler } from "./middlewares/error.middleware";
  
 console.log( 
     'ENV:', process.env.ENV, 
@@ -24,7 +29,18 @@ if( ENV === "PROD"){
     server.use(morgan('combined')); 
 }else{ 
     server.use(morgan('dev')); 
-} 
+}
+
+//Middlewares base
+server.use(cors());
+server.use(express.json());
+server.use(sessionMiddleware)
+
+//Ruta base de servidor
+server.use("/api/v1", apiRoutes);
+
+//Middleware Error handler
+server.use(errorHandler);
  
 server.get('/', (req, res)=> { 
     res.send('Hello MP');   
