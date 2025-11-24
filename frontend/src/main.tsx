@@ -5,6 +5,8 @@ import App from './App';
 import Layout from './layouts/dashboard';
 import DashboardPage from './pages';
 import ExpedientesPage from './pages/expedientes';
+import ExpedienteDetallePage from './pages/expedienteDetalle';
+import ExpedienteNuevoPage from './pages/expedienteNuevo';
 import SignInPage from './pages/signIn';
 import NotFoundPage from './pages//NotFoundPage';
 
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
           {
             path: '/expedientes',
             Component: ExpedientesPage,
+          },
+          {
+            path: '/expedientes/nuevo',
+            Component: ExpedienteNuevoPage,
+          },
+          {
+            path: '/expedientes/:id',
+            Component: ExpedienteDetallePage,
           },
         ],
       },
