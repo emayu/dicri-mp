@@ -322,6 +322,82 @@
 									"    \"status\": \"success\",\r",
 									"    \"message\": \"Login exitoso\",\r",
 									"    \"data\": {\r",
+									"        \"usuario\": \"Carlos Ruiz (Coordinador)\"\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.test(\"The data is the correct\", function () {\r",
+									"    pm.expect(responseData.status).to.eql(expectedResponse.status);\r",
+									"    pm.expect(responseData.message).to.eql(expectedResponse.message);\r",
+									"    pm.expect(responseData.data).to.eql(expectedResponse.data);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo\": \"carlos.ruiz@mp.gob.gt\",\r\n    \"contrasena\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/{{app_base}}/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{app_base}}",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Loging Role [Test] Copy System",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test(\"Status code returned Created correct\", function () {\r",
+									"     pm.response.to.have.status(200);\r",
+									" });\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"const responseData = pm.response.json();\r",
+									"pm.test(\"Result is an Object\", function () {\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The Note has created correct\", function () {\r",
+									"    pm.expect(responseData).has.haveOwnProperty(\"status\");\r",
+									"    pm.expect(responseData).has.haveOwnProperty(\"message\");\r",
+									"    pm.expect(responseData).has.haveOwnProperty(\"data\");\r",
+									"});\r",
+									"\r",
+									"const expectedResponse = {\r",
+									"    \"status\": \"success\",\r",
+									"    \"message\": \"Login exitoso\",\r",
+									"    \"data\": {\r",
 									"        \"usuario\": \"SYSTEM\"\r",
 									"    }\r",
 									"}\r",
@@ -432,7 +508,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "76c1702e-9dbe-4d69-b8d0-1b0a38e6a111"
 								}
 							]
 						}
@@ -805,6 +881,13 @@
 								"{{app_base}}",
 								"v1",
 								"expedientes"
+							],
+							"query": [
+								{
+									"key": "estado",
+									"value": "BORRADOR",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -878,7 +961,7 @@
 							"raw": "{\r\n  \"descripcion\": \"Investigación de hallazgo en residencia Zona 5 (actualizada)\"\r\n}",
 							"options": {
 								"raw": {
-									"language": "text"
+									"language": "json"
 								}
 							}
 						},
@@ -948,7 +1031,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host}}:{{port}}/{{app_base}}/v1/expedientes/:id/enviar-revison",
+							"raw": "http://{{host}}:{{port}}/{{app_base}}/v1/expedientes/:id/enviar-revision",
 							"protocol": "http",
 							"host": [
 								"{{host}}"
@@ -959,7 +1042,7 @@
 								"v1",
 								"expedientes",
 								":id",
-								"enviar-revison"
+								"enviar-revision"
 							],
 							"variable": [
 								{
@@ -1016,7 +1099,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"codigo\":\"DICRI-2025-0002\",\r\n  \"descripcion\": \"Investigación de escena en comercio de la zona 1\"\r\n}",
+							"raw": "{\r\n  \"justificacion\": \"Faltan datos en la descripción de los indicios.\",\r\n  \"tipoRechazo\": \"FALTAN_DATOS\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1120,7 +1203,7 @@
 					"response": []
 				},
 				{
-					"name": "actualizar",
+					"name": "eliminar",
 					"request": {
 						"method": "DELETE",
 						"header": [],

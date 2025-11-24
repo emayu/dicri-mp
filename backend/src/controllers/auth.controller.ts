@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { sendResponse } from '../utils/sendResponse';
-import { AuthService, InvalidCredentialsError } from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { Role } from '../constants';
 
 export async function login(req: Request, res: Response, next:NextFunction) {

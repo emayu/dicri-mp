@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Usuario } from '../types/usuario.types';
 import { UsuarioRepository } from '../repository/usuario.repository';
+import { InvalidCredentialsError } from '../errors/AppErrors';
 
 export class AuthService {
     static async login(correo: string, passwordPlano: string): Promise<Usuario> {
@@ -26,6 +27,3 @@ export class AuthService {
     }
 }
 
-export class InvalidCredentialsError extends Error {
-
-}

@@ -18,7 +18,7 @@ The project is planed use the following components
 - [x] Planned views/mockups and ER schema
 - [x] First design for testing API(postman)
 - [x] Docker compose definition
-- [ ] REST Api implemented
+- [x] REST Api implemented
 - [ ] Postman runner passed
 - [ ] Frontend implemented
  
