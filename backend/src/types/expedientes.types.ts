@@ -1,7 +1,9 @@
+import { ExpedienteEstado } from "../constants/expedientes";
+
 export interface ExpedienteDbRow {
   id: string;
   codigo_expendiente: string;
-  estado: string;
+  estado: ExpedienteEstado;
   descripcion: string | null;
   fecha_creacion: Date;
   usuario_creacion: string;
@@ -21,7 +23,7 @@ export interface ExpedienteDbRow {
 export interface ExpedienteDto {
   id: string;
   codigoExpediente: string;
-  estado: string;
+  estado: ExpedienteEstado;
   descripcion: string | null;
   fechaCreacion: Date;
   fechaModificacion?: Date | null;

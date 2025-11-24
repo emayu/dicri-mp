@@ -408,6 +408,73 @@ BEGIN
 END;
 
 
+CREATE PROCEDURE dbo.sp_expedientes_enviar_revision
+    @id                   UNIQUEIDENTIFIER,
+    @usuario_modificacion UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.expedientes
+    SET
+        estado = 'EN_REVISION',
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_modificacion
+    WHERE id = @id
+      AND activo = 1;
+
+    EXEC mp_dicri_db.dbo.sp_expedientes_buscar_por_id @id;
+END;
+
+
+CREATE PROCEDURE dbo.sp_expedientes_aprobar
+    @id              UNIQUEIDENTIFIER,
+    @usuario_revision UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.expedientes
+    SET
+        estado = 'APROBADO',
+        fecha_revision = SYSDATETIMEOFFSET(),
+        usuario_revision = @usuario_revision,
+        -- limpiar datos de rechazo previos si los hubiera
+        justificacion_rechazo = NULL,
+        tipo_rechazo = NULL,
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_revision
+    WHERE id = @id
+      AND activo = 1;
+
+    EXEC mp_dicri_db.dbo.sp_expedientes_buscar_por_id @id;
+END;
+
+CREATE PROCEDURE dbo.sp_expedientes_rechazar
+    @id               UNIQUEIDENTIFIER,
+    @usuario_revision UNIQUEIDENTIFIER,
+    @justificacion    VARCHAR(500),
+    @tipo_rechazo     VARCHAR(100) = NULL
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.expedientes
+    SET
+        estado = 'RECHAZADO',
+        fecha_revision = SYSDATETIMEOFFSET(),
+        usuario_revision = @usuario_revision,
+        justificacion_rechazo = @justificacion,
+        tipo_rechazo = @tipo_rechazo,
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_revision
+    WHERE id = @id
+      AND activo = 1;
+
+    EXEC mp_dicri_db.dbo.sp_expedientes_buscar_por_id @id;
+END;
+
+
 ---------------------------------------------------------------
 -- Mock data 
 -- Usuario "sistema" para registrar creaciones iniciales
