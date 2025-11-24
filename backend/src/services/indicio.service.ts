@@ -5,7 +5,8 @@ import {
   CrearIndicioDto,
   ActualizarIndicioDto,
 } from '../types/indicio.types';
-import { NotFoundError, ValidationError } from '../errors/AppErrors';
+import { AccessDeniedError, NotFoundError, ValidationError } from '../errors/AppErrors';
+import { ExpedienteRepository } from '../repository/expediente.repository';
 
 function mapDbRowToDto(row: IndicioDbRow): IndicioDto {
   return {
@@ -41,10 +42,21 @@ export class IndicioService {
   static async crear(
     idExpediente: string,
     input: CrearIndicioDto,
-    usuarioId: string
+    usuarioId: string,
+    rolUsuario:string,
   ): Promise<IndicioDto> {
     if (!input.descripcion || input.descripcion.trim().length === 0) {
       throw new ValidationError('La descripción del indicio es requerida');
+    }
+
+    const expediente = await ExpedienteRepository.obtenerPorId(idExpediente);
+    if (!expediente || !expediente.activo) {
+      throw new NotFoundError('Expediente no encontrado');
+    }
+
+    // TODO: revisar filtros seguridad
+    if (rolUsuario === 'TECNICO' && expediente.usuario_creacion !== usuarioId) {
+      throw new AccessDeniedError();
     }
 
     const row = await IndicioRepository.crear(
@@ -63,10 +75,20 @@ export class IndicioService {
   static async actualizar(
     idIndicio: string,
     input: ActualizarIndicioDto,
-    usuarioId: string
+    usuarioId: string,
+    rolUsuario:string,
   ): Promise<IndicioDto> {
     if (!input.descripcion || input.descripcion.trim().length === 0) {
       throw new ValidationError('La descripción del indicio es requerida');
+    }
+
+    const indicio = await IndicioRepository.obtenerPorId(idIndicio);
+    if (!indicio) {
+      throw new NotFoundError('Indicio no encontrado');
+    }
+    // TODO: revisar filtros seguridad
+    if (rolUsuario === 'TECNICO' && indicio.usuario_creacion !== usuarioId) {
+      throw new AccessDeniedError();
     }
 
     const row = await IndicioRepository.actualizar(
@@ -86,7 +108,17 @@ export class IndicioService {
     return mapDbRowToDto(row);
   }
 
-  static async eliminar(idIndicio: string, usuarioId: string): Promise<IndicioDto> {
+  static async eliminar(idIndicio: string, usuarioId: string, rolUsuario:string): Promise<IndicioDto> {
+    const indicio = await IndicioRepository.obtenerPorId(idIndicio);
+    if (!indicio) {
+      throw new NotFoundError('Indicio no encontrado');
+    }
+
+    // TODO: revisar filtros seguridad
+    if (rolUsuario === 'TECNICO' && indicio.usuario_creacion !== usuarioId) {
+      throw new AccessDeniedError();
+    }
+
     const row = await IndicioRepository.eliminar(idIndicio, usuarioId);
     if (!row) {
       throw new NotFoundError('Indicio no encontrado');

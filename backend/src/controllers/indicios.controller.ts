@@ -23,8 +23,8 @@ export async function crear(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params; // id expediente
         const user = req.session.user!;
-
-        const indicio = await IndicioService.crear(id, req.body, user.id);
+        const [rol] = user.roles;
+        const indicio = await IndicioService.crear(id, req.body, user.id, rol);
 
         return sendResponse<IndicioDto>(res, 201, {
             status: 'success',
@@ -40,8 +40,8 @@ export async function actualizar(req: Request, res: Response, next: NextFunction
     try {
         const { id, idIndicio } = req.params;
         const user = req.session.user!;
-
-        const indicio = await IndicioService.actualizar(idIndicio, req.body, user.id);
+        const [rol] = user.roles;
+        const indicio = await IndicioService.actualizar(idIndicio, req.body, user.id, rol);
 
         return sendResponse<IndicioDto>(res, 200, {
             status: 'success',
@@ -57,8 +57,8 @@ export async function eliminar(req: Request, res: Response, next: NextFunction) 
     try {
         const { id, idIndicio } = req.params;
         const user = req.session.user!;
-
-        const indicio = await IndicioService.eliminar(idIndicio, user.id);
+        const [rol] = user.roles;
+        const indicio = await IndicioService.eliminar(idIndicio, user.id, rol);
 
         return sendResponse<IndicioDto>(res, 200, {
             status: 'success',

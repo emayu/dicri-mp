@@ -50,7 +50,7 @@ export class IndicioRepository {
 
   static async obtenerPorId(id: string): Promise<IndicioDbRow | null> {
     const rows = await sequelize.query<IndicioDbRow>(
-      'EXEC sp_indicios_obtener @id = :id',
+      'EXEC sp_indicios_buscar_por_id @id = :id',
       {
         replacements: { id },
         type: QueryTypes.SELECT,
