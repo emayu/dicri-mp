@@ -67,6 +67,38 @@ ALTER TABLE mp_dicri_db.dbo.indicios ADD CONSTRAINT indicios_expedientes_FK FORE
 ALTER TABLE mp_dicri_db.dbo.indicios ADD CONSTRAINT indicios_usuario_creacion_FK FOREIGN KEY (usuario_creacion) REFERENCES mp_dicri_db.dbo.usuarios(id);
 ALTER TABLE mp_dicri_db.dbo.indicios ADD CONSTRAINT indicios_usuario_modificacion_FK FOREIGN KEY (usuario_modificacion) REFERENCES mp_dicri_db.dbo.usuarios(id);
 
+
+--
+-- SPs
+-----------------
+
+USE mp_dicri_db;
+CREATE PROCEDURE dbo.sp_usuarios_buscar_por_correo
+	@correo VARCHAR(100)
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        id,
+        nombre,
+        correo,
+        rol,
+        password_hash,
+        activo,
+        fecha_creacion,
+        usuario_creacion, 
+        fecha_modificacion,
+        usuario_modificacion 
+    FROM mp_dicri_db.dbo.usuarios
+    WHERE correo = @correo
+    AND activo = 1;
+END;
+
+
+
+
+---------------------------------------------------------------
 -- Mock data 
 -- Usuario "sistema" para registrar creaciones iniciales
 INSERT INTO mp_dicri_db.dbo.usuarios
