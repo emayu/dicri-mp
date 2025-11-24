@@ -96,6 +96,316 @@ BEGIN
 END;
 
 
+CREATE PROCEDURE dbo.sp_expedientes_crear
+	@descripcion        VARCHAR(500),
+    @usuario_creacion   UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @id UNIQUEIDENTIFIER = NEWID();
+    DECLARE @codigo_expediente VARCHAR(100) =
+        CONCAT('DICRI-', FORMAT(SYSDATETIME(), 'yyyyMMdd-HHmmss-fff'));
+
+    INSERT INTO mp_dicri_db.dbo.expedientes (
+        id,
+        codigo_expendiente,
+        estado,
+        descripcion,
+        usuario_creacion,
+        fecha_creacion,
+        activo
+    )
+    VALUES (
+        @id,
+        @codigo_expediente,
+        'BORRADOR',
+        @descripcion,
+        @usuario_creacion,
+        SYSDATETIMEOFFSET(),
+        1
+    );
+
+    SELECT
+        e.id,
+        e.codigo_expendiente,
+        e.estado,
+        e.descripcion,
+        e.fecha_creacion,
+        e.usuario_creacion,
+        u.nombre AS nombre_usuario_creacion,
+        e.activo
+    FROM mp_dicri_db.dbo.expedientes e
+    INNER JOIN mp_dicri_db.dbo.usuarios u ON u.id = e.usuario_creacion
+    WHERE e.id = @id;
+END;
+
+
+CREATE PROCEDURE dbo.sp_expedientes_listar
+	@estado            VARCHAR(100) = NULL,
+    @usuario_creacion  UNIQUEIDENTIFIER = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+    SELECT
+        e.id,
+        e.codigo_expendiente,
+        e.estado,
+        e.descripcion,
+        e.fecha_creacion,
+        e.usuario_creacion,
+        u.nombre AS nombre_usuario_creacion,
+        e.fecha_revision,
+        e.usuario_revision,
+        ur.nombre AS nombre_usuario_revision,
+        e.usuario_modificacion,
+        um.nombre AS nombre_usuario_modificacion,
+        e.fecha_modificacion,
+        e.justificacion_rechazo,
+        e.tipo_rechazo,
+        e.activo
+    FROM mp_dicri_db.dbo.expedientes e
+    INNER JOIN mp_dicri_db.dbo.usuarios u ON u.id = e.usuario_creacion
+    LEFT JOIN mp_dicri_db.dbo.usuarios ur ON ur.id = e.usuario_revision
+    LEFT JOIN mp_dicri_db.dbo.usuarios um ON um.id = e.usuario_modificacion 
+    WHERE
+        e.activo = 1
+        AND (@estado IS NULL OR e.estado = @estado)
+        AND (@usuario_creacion IS NULL OR e.usuario_creacion = @usuario_creacion)
+    ORDER BY e.fecha_creacion DESC;
+END;
+
+
+CREATE PROCEDURE dbo.sp_expedientes_buscar_por_id
+	    @id UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        e.id,
+        e.codigo_expendiente,
+        e.estado,
+        e.descripcion,
+        e.fecha_creacion,
+        e.usuario_creacion,
+        u.nombre AS nombre_usuario_creacion,
+        e.fecha_revision,
+        e.usuario_revision,
+        ur.nombre AS nombre_usuario_revision,
+        e.justificacion_rechazo,
+        e.tipo_rechazo,
+        e.fecha_modificacion,
+        e.usuario_modificacion,
+        um.nombre AS nombre_usuario_modificacion,
+        e.activo
+    FROM mp_dicri_db.dbo.expedientes e
+    INNER JOIN mp_dicri_db.dbo.usuarios u ON u.id = e.usuario_creacion
+    LEFT JOIN mp_dicri_db.dbo.usuarios ur ON ur.id = e.usuario_revision
+    LEFT JOIN mp_dicri_db.dbo.usuarios um ON um.id = e.usuario_modificacion
+    WHERE e.id = @id;
+END;
+
+CREATE PROCEDURE dbo.[sp_expedientes_actualizar]
+	@id                   UNIQUEIDENTIFIER,
+    @descripcion          VARCHAR(500),
+    @usuario_modificacion UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.expedientes
+    SET
+        descripcion = @descripcion,
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_modificacion
+    WHERE id = @id
+      AND activo = 1;
+
+    -- devolver registro actualizado
+    EXEC sp_expedientes_buscar_por_id @id;
+END;
+
+CREATE PROCEDURE dbo.sp_expedientes_eliminar
+    @id                   UNIQUEIDENTIFIER,
+    @usuario_modificacion UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.expedientes
+    SET
+        activo = 0,
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_modificacion
+    WHERE id = @id
+      AND activo = 1;
+
+    EXEC mp_dicri_db.dbo.sp_expedientes_buscar_por_id @id;
+END;
+
+CREATE PROCEDURE dbo.sp_indicios_crear
+    @id_expediente      UNIQUEIDENTIFIER,
+    @descripcion        VARCHAR(500),
+    @color              VARCHAR(100) = NULL,
+    @tamanio            VARCHAR(100) = NULL,
+    @peso               VARCHAR(100) = NULL,
+    @ubicacion          VARCHAR(100) = NULL,
+    @usuario_creacion   UNIQUEIDENTIFIER
+AS 
+bEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @id UNIQUEIDENTIFIER = NEWID();
+
+    INSERT INTO mp_dicri_db.dbo.indicios (
+        id,
+        id_expediente,
+        descripcion,
+        color,
+        tamanio,
+        peso,
+        ubicacion,
+        usuario_creacion,
+        fecha_creacion,
+        activo
+    )
+    VALUES (
+        @id,
+        @id_expediente,
+        @descripcion,
+        @color,
+        @tamanio,
+        @peso,
+        @ubicacion,
+        @usuario_creacion,
+        SYSDATETIMEOFFSET(),
+        1
+    );
+
+    -- devolver el indicio creado
+    SELECT
+        i.id,
+        i.id_expediente,
+        i.descripcion,
+        i.color,
+        i.tamanio,
+        i.peso,
+        i.ubicacion,
+        i.fecha_creacion,
+        i.usuario_creacion,
+        u.nombre AS nombre_usuario_creacion,
+        i.fecha_modificacion,
+        i.usuario_modificacion,
+        um.nombre AS nombre_usuario_modificacion,
+        i.activo
+    FROM mp_dicri_db.dbo.indicios i
+    INNER JOIN mp_dicri_db.dbo.usuarios u ON u.id = i.usuario_creacion
+    LEFT JOIN mp_dicri_db.dbo.usuarios um ON um.id = i.usuario_modificacion
+    WHERE i.id = @id;
+END;
+
+CREATE PROCEDURE dbo.sp_indicios_buscar_por_expediente
+	@id_expediente UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        i.id,
+        i.id_expediente,
+        i.descripcion,
+        i.color,
+        i.tamanio,
+        i.peso,
+        i.ubicacion,
+        i.fecha_creacion,
+        i.usuario_creacion,
+        u.nombre AS nombre_usuario_creacion,
+        i.fecha_modificacion,
+        i.usuario_modificacion,
+        um.nombre AS nombre_usuario_modificacion,
+        i.activo
+    FROM mp_dicri_db.dbo.indicios i
+    INNER JOIN mp_dicri_db.dbo.usuarios u ON u.id = i.usuario_creacion
+    LEFT JOIN mp_dicri_db.dbo.usuarios um ON um.id = i.usuario_modificacion
+    WHERE i.id_expediente = @id_expediente
+      AND i.activo = 1
+    ORDER BY i.fecha_creacion ASC;
+END;
+
+CREATE PROCEDURE dbo.sp_indicios_buscar_por_id
+	    @id UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        i.id,
+        i.id_expediente,
+        i.descripcion,
+        i.color,
+        i.tamanio,
+        i.peso,
+        i.ubicacion,
+        i.fecha_creacion,
+        i.usuario_creacion,
+        u.nombre AS nombre_usuario_creacion,
+        i.fecha_modificacion,
+        i.usuario_modificacion,
+        um.nombre AS nombre_usuario_modificacion,
+        i.activo
+    FROM mp_dicri_db.dbo.indicios i
+    INNER JOIN mp_dicri_db.dbo.usuarios u ON u.id = i.usuario_creacion
+    LEFT JOIN mp_dicri_db.dbo.usuarios um ON um.id = i.usuario_modificacion
+    WHERE i.id = @id;
+END;
+
+CREATE PROCEDURE dbo.sp_indicios_actualizar
+    @id                   UNIQUEIDENTIFIER,
+    @descripcion          VARCHAR(500),
+    @color                VARCHAR(100) = NULL,
+    @tamanio              VARCHAR(100) = NULL,
+    @peso                 VARCHAR(100) = NULL,
+    @ubicacion            VARCHAR(100) = NULL,
+    @usuario_modificacion UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.indicios
+    SET
+        descripcion = @descripcion,
+        color = @color,
+        tamanio = @tamanio,
+        peso = @peso,
+        ubicacion = @ubicacion,
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_modificacion
+    WHERE id = @id
+      AND activo = 1;
+
+    EXEC mp_dicri_db.dbo.sp_indicios_obtener @id;
+END;
+
+CREATE PROCEDURE dbo.sp_indicios_eliminar
+	@id                   UNIQUEIDENTIFIER,
+    @usuario_modificacion UNIQUEIDENTIFIER
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE mp_dicri_db.dbo.indicios
+    SET
+        activo = 0,
+        fecha_modificacion = SYSDATETIMEOFFSET(),
+        usuario_modificacion = @usuario_modificacion
+    WHERE id = @id
+      AND activo = 1;
+
+    EXEC mp_dicri_db.dbo.sp_indicios_buscar_por_id @id;
+END;
 
 
 ---------------------------------------------------------------
