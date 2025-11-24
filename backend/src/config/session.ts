@@ -14,11 +14,13 @@ const store = new SequelizeStore({
 store.sync();
 
 export const sessionMiddleware = session({
+  name: 'dicri.sid',
   secret: process.env.SESSION_SECRET || 'supersecret',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // true en producción con HTTPS
+    secure: false, // true en producción con HTTPS,
+    sameSite: 'lax',
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 8, // 8 horas
   },

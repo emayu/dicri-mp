@@ -24,15 +24,30 @@ const PORT = process.env.PORT || 3000;
 const ENV = process.env.ENV || "DEV"; 
  
  
- 
+let ALLOWED_ORIGINS = ['http://localhost:5173'];
 if( ENV === "PROD"){ 
     server.use(morgan('combined')); 
+    ALLOWED_ORIGINS = ['produrl'];
 }else{ 
     server.use(morgan('dev')); 
+    ALLOWED_ORIGINS = ['http://localhost:5173'];
 }
 
 //Middlewares base
-server.use(cors());
+server.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true, 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+);
 server.use(express.json());
 server.use(sessionMiddleware)
 
