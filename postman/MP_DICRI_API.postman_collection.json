@@ -344,7 +344,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"correo\": \"system@mp.gob.gt\",\r\n    \"contrasena\": \"123456\"\r\n}",
+							"raw": "{\r\n    \"correo\": \"carlos.ruiz@mp.gob.gt\",\r\n    \"contrasena\": \"123456\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -805,6 +805,13 @@
 								"{{app_base}}",
 								"v1",
 								"expedientes"
+							],
+							"query": [
+								{
+									"key": "estado",
+									"value": "BORRADOR",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -878,7 +885,7 @@
 							"raw": "{\r\n  \"descripcion\": \"Investigación de hallazgo en residencia Zona 5 (actualizada)\"\r\n}",
 							"options": {
 								"raw": {
-									"language": "text"
+									"language": "json"
 								}
 							}
 						},
@@ -948,7 +955,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host}}:{{port}}/{{app_base}}/v1/expedientes/:id/enviar-revison",
+							"raw": "http://{{host}}:{{port}}/{{app_base}}/v1/expedientes/:id/enviar-revision",
 							"protocol": "http",
 							"host": [
 								"{{host}}"
@@ -959,7 +966,7 @@
 								"v1",
 								"expedientes",
 								":id",
-								"enviar-revison"
+								"enviar-revision"
 							],
 							"variable": [
 								{
@@ -1016,7 +1023,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"codigo\":\"DICRI-2025-0002\",\r\n  \"descripcion\": \"Investigación de escena en comercio de la zona 1\"\r\n}",
+							"raw": "{\r\n  \"justificacion\": \"Faltan datos en la descripción de los indicios.\",\r\n  \"tipoRechazo\": \"FALTAN_DATOS\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1120,7 +1127,7 @@
 					"response": []
 				},
 				{
-					"name": "actualizar",
+					"name": "eliminar",
 					"request": {
 						"method": "DELETE",
 						"header": [],
