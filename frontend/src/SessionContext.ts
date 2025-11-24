@@ -1,13 +1,14 @@
 import * as React from 'react';
-import type { Session } from '@toolpad/core';
+import { AppSession } from './types/auth';
+
 
 export interface SessionContextValue {
-  session: Session | null;
-  setSession: (session: Session | null) => void;
+  session: AppSession | null;
+  setSession: (session: AppSession | null) => void;
 }
 
 export const SessionContext = React.createContext<SessionContextValue>({
-  session: {},
+  session: null,
   setSession: () => {},
 });
 
