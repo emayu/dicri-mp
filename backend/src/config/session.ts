@@ -8,7 +8,7 @@ const store = new SequelizeStore({
     db: sequelize,
     tableName: 'sesiones',
     checkExpirationInterval: 15 * 60 * 1000, //15 minutos
-    expiration: 24 * 60 * 60 * 1000 // 24 hrs
+    expiration: 1000 * 60 * 60  * 24 // 24 hrs
   });
 
 store.sync();
@@ -20,7 +20,7 @@ export const sessionMiddleware = session({
   cookie: {
     secure: false, // true en producción con HTTPS
     httpOnly: true,
-    maxAge: 8 * 60 * 60 * 2, // 8 horas
+    maxAge: 1000 * 60 * 60 * 8, // 8 horas
   },
   store
 });
